@@ -1,15 +1,20 @@
 FROM python:3.10-slim
 
-# ffmpeg install කරන්න
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+# System dependencies update + Node.js (latest LTS), npm, ffmpeg install කරන්න
+RUN apt-get update && apt-get install -y curl gnupg ffmpeg build-essential \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g npm@latest \
+    && rm -rf /var/lib/apt/lists/*
+
+# Node.js & npm versions check
+RUN node -v && npm -v && ffmpeg -version
 
 # JupyterLab install කරන්න
-RUN pip install jupyterlab
+RUN pip install --no-cache-dir jupyterlab
 
 # Hugging Face writable paths use කරන්න
-ENV JUPYTER_RUNTIME_DIR=/tmp/jupyter_runtime
-ENV JUPYTER_DATA_DIR=/tmp/jupyter_data
-ENV JUPYTER_CONFIG_DIR=/tmp/jupyter_config
+
 
 # Hugging Face default port
 EXPOSE 7860
